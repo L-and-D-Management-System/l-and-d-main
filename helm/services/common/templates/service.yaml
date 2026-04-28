@@ -9,6 +9,5 @@ spec:
   ports:
   - port: {{ .Values.database.port }}
     targetPort: {{ .Values.database.port }}
-  clusterIP: None
   selector:
     app: {{ .Values.database.name }}

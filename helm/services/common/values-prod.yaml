@@ -5,6 +5,6 @@ database:
   storageClassName: nfs-prod
   nfs:
     server: 10.0.8.33
-    path: /var/nfs/general/prod
+    path: /var/nfs/general/finalcapstone
 gateway:
   namespace: ld-prod

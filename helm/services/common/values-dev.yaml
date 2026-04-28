@@ -5,6 +5,6 @@ database:
   storageClassName: nfs-dev
   nfs:
     server: 10.0.8.33
-    path: /var/nfs/general/dev
+    path: /var/nfs/general/finalcapstone
 gateway:
   namespace: ld-dev
