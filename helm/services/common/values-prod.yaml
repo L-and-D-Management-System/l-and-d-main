@@ -1,3 +1,4 @@
 # Prod environment values for common components
 database:
-  storageSize: 5Gi
+  storageSize: 10Gi
+  storageClassName: gp2-prod
