@@ -46,32 +46,32 @@ jobs:
           password: ${{ secrets.GH_PAT }}
 
       # 🔥 FIXED RELEASE LOGIC (NO PULL)
-      - name: Build & Release service
+      - name: Release service (Promote existing image)
         run: |
           SERVICE="${RELEASE_SERVICE}"
 
           IMAGE_REPOSITORY=$(yq '.image.repository' helm/services/${SERVICE}/values-dev.yaml)
+          SOURCE_TAG=$(yq '.image.tag' helm/services/${SERVICE}/values-dev.yaml)
 
           echo "Releasing $SERVICE"
           echo "Repo: $IMAGE_REPOSITORY"
+          echo "Source Tag: $SOURCE_TAG"
+          echo "Release Tag: $RELEASE_TAG"
 
-          # build directly (no dependency on dev image)
-          docker build -t ${IMAGE_REPOSITORY}:${RELEASE_TAG} .
+          # STEP 1: Pull existing DEV image
+          docker pull ${IMAGE_REPOSITORY}:${SOURCE_TAG}
 
+          # STEP 2: Retag as release
+          docker tag \
+            ${IMAGE_REPOSITORY}:${SOURCE_TAG} \
+            ${IMAGE_REPOSITORY}:${RELEASE_TAG}
+
+          # STEP 3: Push release tag
           docker push ${IMAGE_REPOSITORY}:${RELEASE_TAG}
 
+          # STEP 4: Update Helm prod values
           yq -i ".image.tag = \"${RELEASE_TAG}\"" \
             helm/services/${SERVICE}/values-prod.yaml
-
-      - name: Commit & push Helm updates
-        run: |
-          git config user.name "ci-bot"
-          git config user.email "ci@bot.com"
-
-          git add helm/services/${RELEASE_SERVICE}/values-prod.yaml
-          git commit -m "release ${RELEASE_SERVICE} -> ${RELEASE_TAG}" || echo "No changes"
-
-          git push origin HEAD:main
 
       - name: Notify
         if: always()
