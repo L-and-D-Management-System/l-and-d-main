@@ -1,4 +1,3 @@
 # Dev environment values for common components
 database:
-  storageSize: 5Gi
   storageClassName: gp2-dev

@@ -1,9 +1,8 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: {{ .Values.database.storageClassName }}
-provisioner: kubernetes.io/aws-ebs
+  name: {{ .Values.database.storageClass }}
+provisioner: nfs.csi.k8s.io
 parameters:
-  type: gp2
-reclaimPolicy: Retain
-volumeBindingMode: WaitForFirstConsumer
+  server: 10.0.8.33
+  share: /var/nfs/general/finalcapstone
