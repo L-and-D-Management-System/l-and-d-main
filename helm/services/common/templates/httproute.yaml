@@ -84,11 +84,18 @@ spec:
   parentRefs:
   - name: {{ .Values.gateway.name }}
     namespace: {{ .Values.gateway.namespace }}
+
   rules:
   - matches:
     - path:
         type: PathPrefix
         value: /auth
+    filters:
+    - type: URLRewrite
+      urlRewrite:
+        path:
+          type: ReplacePrefixMatch
+          replacePrefixMatch: /
     backendRefs:
     - name: auth-service
       port: 3000
@@ -97,6 +104,12 @@ spec:
     - path:
         type: PathPrefix
         value: /users
+    filters:
+    - type: URLRewrite
+      urlRewrite:
+        path:
+          type: ReplacePrefixMatch
+          replacePrefixMatch: /
     backendRefs:
     - name: user-service
       port: 3000
@@ -105,6 +118,12 @@ spec:
     - path:
         type: PathPrefix
         value: /trainings
+    filters:
+    - type: URLRewrite
+      urlRewrite:
+        path:
+          type: ReplacePrefixMatch
+          replacePrefixMatch: /
     backendRefs:
     - name: training-service
       port: 3000
@@ -113,17 +132,15 @@ spec:
     - path:
         type: PathPrefix
         value: /attendance
+    filters:
+    - type: URLRewrite
+      urlRewrite:
+        path:
+          type: ReplacePrefixMatch
+          replacePrefixMatch: /
     backendRefs:
     - name: attendance-service
       port: 3000
-
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /assets
-    backendRefs:
-    - name: frontend
-      port: 80
 
   - matches:
     - path:
