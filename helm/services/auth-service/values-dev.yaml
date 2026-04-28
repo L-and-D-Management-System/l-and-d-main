@@ -1,3 +1,4 @@
 replicaCount: 1
 image:
-  tag: "dev-latest"
+  repository: ghcr.io/l-and-d-management-system/auth-service
+  tag: latest
