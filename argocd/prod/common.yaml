@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: landd-common-prod
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/L-and-D-Management-System/l-and-d-main.git
+    targetRevision: main
+    path: helm/services/common
+    helm:
+      valueFiles:
+        - values-prod.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ld-prod
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

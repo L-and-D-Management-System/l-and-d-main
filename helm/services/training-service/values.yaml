@@ -1,0 +1,18 @@
+fullnameOverride: training-service
+replicaCount: 1
+image:
+  repository: landd/training-service
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 3000
+
+env:
+  MONGODB_URI: "mongodb://mongodb:27017/training-db"
+  PORT: "3000"
+
+secrets:
+  JWT_SECRET: "your-jwt-secret-here"
+

@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/L-and-D-Management-System/l-and-d-main.git
-    targetRevision: master
+    targetRevision: main
     path: helm/services/user-service
     helm:
       valueFiles:

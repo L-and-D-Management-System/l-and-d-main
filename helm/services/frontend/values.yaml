@@ -1,0 +1,18 @@
+fullnameOverride: frontend
+replicaCount: 1
+image:
+  repository: landd/frontend
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 80
+
+env:
+  MONGODB_URI: "mongodb://mongodb:27017/frontend-db"
+  PORT: "3000"
+
+secrets:
+  JWT_SECRET: "your-jwt-secret-here"
+
