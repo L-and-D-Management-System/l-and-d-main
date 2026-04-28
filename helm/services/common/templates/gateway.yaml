@@ -4,7 +4,7 @@ metadata:
   name: {{ .Values.gateway.name }}
   namespace: {{ .Values.gateway.namespace | default .Release.Namespace }}
 spec:
-  gatewayClassName: istio
+  gatewayClassName: kgateway
   listeners:
   - name: http
     port: 80
