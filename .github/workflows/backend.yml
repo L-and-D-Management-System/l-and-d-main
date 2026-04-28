@@ -1,32 +1,39 @@
 name: Backend CI/CD
- 
+
 on:
   workflow_call:
     inputs:
-      service: { required: true, type: string }
-      image: { required: true, type: string }
-      trigger: { required: true, type: string }
- 
+      service:
+        required: true
+        type: string
+      image:
+        required: true
+        type: string
+      trigger:
+        required: true
+        type: string
+
+# IMPORTANT: workflow-level permissions
 permissions:
   contents: read
   packages: write
- 
+
 jobs:
- 
+
   pr-checks:
     if: inputs.trigger == 'pull_request'
     runs-on: ubuntu-latest
- 
+
     steps:
       - uses: actions/checkout@v4
- 
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
- 
+
       - run: npm ci
- 
+
       - name: Sonar
         uses: SonarSource/sonarqube-scan-action@v3
         env:
@@ -36,18 +43,18 @@ jobs:
           args: >
             -Dsonar.projectKey=${{ secrets.SONAR_KEY }}
             -Dsonar.sources=.
- 
+
       - name: Quality Gate
         uses: SonarSource/sonarqube-quality-gate-action@v1
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_URL }}
- 
+
       - name: Snyk
         uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
- 
+
       - name: Notify
         if: always()
         uses: dawidd6/action-send-mail@v3
@@ -58,37 +65,33 @@ jobs:
           password: ${{ secrets.SMTP_PASS }}
           to: ${{ secrets.NOTIFY_EMAIL }}
           from: "CI/CD Bot <${{ secrets.SMTP_USER }}>"
-          subject: "${{ job.status == 'success' && '✅' || '❌' }} [${{ inputs.service }}] PR Checks — ${{ github.sha }}"
+          subject: "${{ job.status == 'success' && '✅' || '❌' }} [${{ inputs.service }}] PR Checks"
           body: |
             STATUS: ${{ job.status }}
             Service: ${{ inputs.service }}
-            Repo: ${{ github.repository }}
-            Actor: ${{ github.actor }}
-            Event: PR
             Commit: ${{ github.sha }}
- 
-            Steps:
-            - Sonar
-            - Quality Gate
-            - Snyk
- 
-            Logs:
-            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
- 
- 
+            Repo: ${{ github.repository }}
+
   build:
     if: inputs.trigger == 'push'
     runs-on: ubuntu-latest
- 
+
+    # 🔴 CRITICAL FIX (required for GHCR in reusable workflows)
+    permissions:
+      contents: read
+      packages: write
+
     steps:
       - uses: actions/checkout@v4
- 
+
+      # Generate image tag
       - id: meta
         run: |
           SHA=$(echo ${{ github.sha }} | cut -c1-7)
           echo "tag=sha-$SHA" >> $GITHUB_OUTPUT
           echo "image=${{ inputs.image }}:sha-$SHA" >> $GITHUB_OUTPUT
- 
+
+      # Resolve service directory
       - id: context
         shell: bash
         run: |
@@ -98,19 +101,23 @@ jobs:
           else
             echo "path=." >> "$GITHUB_OUTPUT"
           fi
- 
+
+      # LOGIN TO GHCR (keep GITHUB_TOKEN for simplicity)
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
- 
+
+      # SINGLE BUILD + PUSH (FIXED)
       - uses: docker/build-push-action@v5
         with:
           context: ${{ steps.context.outputs.path }}
-          no-cache: true
+          push: true
           tags: ${{ steps.meta.outputs.image }}
- 
+          no-cache: true
+
+      # Security scan
       - name: Trivy
         uses: aquasecurity/trivy-action@master
         with:
@@ -119,14 +126,8 @@ jobs:
           exit-code: 1
           ignore-unfixed: true
           scanners: vuln
-          skip-dirs: /usr/local/lib/node_modules/npm
- 
-      - uses: docker/build-push-action@v5
-        with:
-          context: ${{ steps.context.outputs.path }}
-          push: true
-          tags: ${{ steps.meta.outputs.image }}
- 
+
+      # Trigger downstream deployment
       - name: Dispatch
         uses: peter-evans/repository-dispatch@v3
         with:
@@ -140,7 +141,8 @@ jobs:
               "sha_tag": "${{ steps.meta.outputs.tag }}",
               "commit_sha": "${{ github.sha }}"
             }
- 
+
+      # Notify
       - name: Notify
         if: always()
         uses: dawidd6/action-send-mail@v3
@@ -151,18 +153,9 @@ jobs:
           password: ${{ secrets.SMTP_PASS }}
           to: ${{ secrets.NOTIFY_EMAIL }}
           from: "CI/CD Bot <${{ secrets.SMTP_USER }}>"
-          subject: "${{ job.status == 'success' && '✅' || '❌' }} [${{ inputs.service }}] Build — ${{ steps.meta.outputs.tag }}"
+          subject: "${{ job.status == 'success' && '✅' || '❌' }} [${{ inputs.service }}] Build"
           body: |
             STATUS: ${{ job.status }}
             Service: ${{ inputs.service }}
             Image: ${{ steps.meta.outputs.image }}
             Commit: ${{ github.sha }}
- 
-            Steps:
-            - Build
-            - Trivy Scan
-            - Push
-            - Dispatch
- 
-            Logs:
-            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
