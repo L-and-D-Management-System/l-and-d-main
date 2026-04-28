@@ -10,7 +10,7 @@ service:
   port: 3000
 
 env:
-  MONGODB_URI: "mongodb://mongodb:27017/attendance-db"
+  MONGO_URI: "mongodb://mongodb:27017/attendance-db"
   PORT: "3000"
 
 secrets:

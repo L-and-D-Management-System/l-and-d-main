@@ -10,7 +10,7 @@ service:
   port: 80
 
 env:
-  MONGODB_URI: "mongodb://mongodb:27017/frontend-db"
+  MONGO_URI: "mongodb://mongodb:27017/frontend-db"
   PORT: "3000"
 
 secrets:
