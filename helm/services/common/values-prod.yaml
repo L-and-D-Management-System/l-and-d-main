@@ -1,3 +1,8 @@
 # Prod environment values for common components
 database:
-  storageClassName: gp2-prod
+  image: mongo:6.0
+  storageSize: 10Gi
+  storageClassName: nfs-prod
+  nfs:
+    server: 10.0.8.33
+    path: /var/nfs/general/prod

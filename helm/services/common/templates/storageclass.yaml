@@ -4,5 +4,5 @@ metadata:
   name: {{ .Values.database.storageClassName }}
 provisioner: nfs.csi.k8s.io
 parameters:
-  server: 10.0.8.33
-  share: /var/nfs/general/finalcapstone
+  server: {{ .Values.database.nfs.server }}
+  share: {{ .Values.database.nfs.path }}
