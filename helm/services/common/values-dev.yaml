@@ -7,4 +7,4 @@ database:
     server: 10.0.8.33
     path: /var/nfs/general/dev
 gateway:
-  namespace: ld-prod
+  namespace: ld-dev
