@@ -11,35 +11,42 @@ spec:
   - matches:
     - path:
         type: PathPrefix
-        value: /api/auth
+        value: /auth
     backendRefs:
     - name: auth-service
-      port: 3000
+      port: 3001
   - matches:
     - path:
         type: PathPrefix
-        value: /api/user
+        value: /users
     backendRefs:
     - name: user-service
-      port: 3000
+      port: 3002
   - matches:
     - path:
         type: PathPrefix
-        value: /api/training
+        value: /trainings
     backendRefs:
     - name: training-service
-      port: 3000
+      port: 3003
   - matches:
     - path:
         type: PathPrefix
-        value: /api/attendance
+        value: /attendance
     backendRefs:
     - name: attendance-service
-      port: 3000
+      port: 3004
   - matches:
     - path:
         type: PathPrefix
         value: /
+    backendRefs:
+    - name: frontend
+      port: 80
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /assets
     backendRefs:
     - name: frontend
       port: 80
