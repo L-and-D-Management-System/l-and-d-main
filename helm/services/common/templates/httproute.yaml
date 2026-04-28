@@ -6,7 +6,7 @@ metadata:
 spec:
   parentRefs:
   - name: {{ .Values.gateway.name }}
-    namespace: {{ .Values.gateway.namespace | default .Release.Namespace }}
+    namespace: {{ .Values.gateway.namespace }}
   rules:
   - matches:
     - path:
