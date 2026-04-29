@@ -84,7 +84,7 @@ jobs:
       
           git commit -m "update ${RELEASE_SERVICE} → ${RELEASE_TAG}" || echo "No changes"
       
-          git push
+          git push origin HEAD:main
 
       - name: Notify
         if: always()
