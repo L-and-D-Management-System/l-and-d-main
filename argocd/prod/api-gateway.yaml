@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/L-and-D-Management-System/l-and-d-main.git
     targetRevision: main
-    path: helm/services/api-gateway
+    path: helm/services/api-gateway-lnd
     helm:
       valueFiles:
         - values-prod.yaml
