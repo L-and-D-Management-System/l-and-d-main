@@ -1,4 +1,5 @@
 replicaCount: 1
 image:
-  repository: ghcr.io/l-and-d-management-system/auth-service
+  repository: ghcr.io/l-and-d-management-system/attendance-service
+
   tag: latest
