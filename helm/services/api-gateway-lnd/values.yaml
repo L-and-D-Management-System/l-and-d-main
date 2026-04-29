@@ -1,7 +1,7 @@
-fullnameOverride: api-gateway
+fullnameOverride: api-gateway-lnd
 replicaCount: 1
 image:
-  repository: landd/api-gateway
+  repository: l-and-d-management-system/api-gateway
   pullPolicy: IfNotPresent
   tag: "latest"
 
