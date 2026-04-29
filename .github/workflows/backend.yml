@@ -64,6 +64,15 @@ jobs:
           password: ${{ secrets.SMTP_PASS }}
           to: ${{ secrets.NOTIFY_EMAIL }}
           from: "CI/CD Bot <${{ secrets.SMTP_USER }}>"
+          subject: "Pipeline Status - ${{ job.status }}"
+          body: |
+            Status: ${{ job.status }}
+            Repository: ${{ github.repository }}
+            Workflow: ${{ github.workflow }}
+            Run ID: ${{ github.run_id }}
+      
+            View Logs:
+            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
   build:
     if: inputs.trigger == 'push'
