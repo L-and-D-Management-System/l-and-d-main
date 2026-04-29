@@ -110,7 +110,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GH_PAT }}
+          password: ${{ secrets.GITHUB_TOKEN  }}
 
       # Build + Push (single step, correct)
       - name: Build & Push Image
