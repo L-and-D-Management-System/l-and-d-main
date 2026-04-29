@@ -76,14 +76,14 @@ jobs:
           yq -i ".image.tag = \"${RELEASE_TAG}\"" \
             helm/services/${SERVICE}/values-prod.yaml
       - name: Commit
-        env:
-          SERVICE: ${{ github.event.client_payload.service_name }}
-          TAG: ${{ github.event.client_payload.sha_tag }}
         run: |
-          git config user.name ci-bot
-          git config user.email ci@bot.com
-          git add helm/services/$SERVICE/values-prod.yaml
-          git commit -m "update $SERVICE → $TAG"
+          git config user.name "ci-bot"
+          git config user.email "ci-bot@users.noreply.github.com"
+      
+          git add helm/services/${RELEASE_SERVICE}/values-prod.yaml
+      
+          git commit -m "update ${RELEASE_SERVICE} → ${RELEASE_TAG}" || echo "No changes"
+      
           git push
 
       - name: Notify
